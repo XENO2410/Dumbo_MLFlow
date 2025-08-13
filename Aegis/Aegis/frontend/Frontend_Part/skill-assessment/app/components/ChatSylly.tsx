@@ -32,38 +32,58 @@ export function ChatSylly() {
     }
   }, [messages.length]);
 
-  const handleSendMessage = async () => {
+// frontend/Frontend_Part/skill-assessment/app/components/ChatSylly.tsx
+
+const handleSendMessage = async () => {
     if (!userInput.trim() || isProcessing) return;
 
     setIsProcessing(true);
     setError(null);
-    const newMessage: Message = { role: "user", content: userInput };
-    setMessages((prev) => [...prev, newMessage]);
+    const newUserMessage: Message = { role: "user", content: userInput };
+
+    // FIX: Create the complete, updated list of messages first.
+    const updatedMessages = [...messages, newUserMessage];
+
+    // Use this new list to update the state.
+    setMessages(updatedMessages);
+    
+    // And use the SAME new list to send to the API.
+    // This ensures your newest message is included.
+    const messageHistory = updatedMessages.map(({ role, content }) => ({
+        role,
+        content
+    }));
+
     setUserInput("");
 
     try {
-      const response = await fetch("/api/sylly-chat", {
+      const response = await fetch("http://localhost:8000/api/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          message: userInput,
+          // FIX: Use your actual Agent ID here.
+          agentId: "656b61b1-bfbe-46a0-801d-8e66e0a5c353", // <-- PASTE YOUR REAL AGENT ID
+          messages: messageHistory,
         }),
       });
 
-      if (!response.ok) throw new Error("Failed to get response");
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to get response from backend");
+      }
 
       const data = await response.json();
-      const htmlContent = marked(data.response);
-
+      
       const assistantMessage: Message = {
         role: "assistant",
-        content: htmlContent as string,
+        content: data.response,
       };
       setMessages((prev) => [...prev, assistantMessage]);
-    } catch (err) {
-      setError("Sorry, I encountered an error. Please try again.");
+
+    } catch (err: any) {
+      setError(err.message || "Sorry, I encountered an error. Please try again.");
       console.error("Chat error:", err);
     } finally {
       setIsProcessing(false);

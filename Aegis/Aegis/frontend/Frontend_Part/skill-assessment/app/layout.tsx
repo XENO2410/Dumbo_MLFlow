@@ -17,9 +17,9 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Aegis-NSUT",
+  title: "Dumbo Chat",
   description:
-    "Aegis-NSUT is a student-driven initiative dedicated to reimagining the educational experience through thoughtful, tech-powered solutions.",
+    "Dumbo Chats",
   icons: {
     icon: "/favicon.ico",
   },

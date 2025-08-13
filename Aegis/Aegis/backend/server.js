@@ -29,7 +29,9 @@ const authRoutes = require("./routes/authRoutes");
 const testRoutes = require("./routes/testRoutes");
 const itemsRoute = require('./routes/items');
 const uploadRoute = require('./routes/upload');
+const chatRoutes = require('./routes/chatRoutes');
 
+app.use('/api', chatRoutes); // This will create the endpoint POST /api/chat
 app.use("/api/auth", authRoutes);
 app.use("/api/tests", testRoutes);
 app.use('/api/bookmarks', require('./routes/bookmarks'));
@@ -54,5 +56,5 @@ app.use((req, res) => {
   });
 });
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
